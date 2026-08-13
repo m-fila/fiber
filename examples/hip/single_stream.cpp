@@ -7,15 +7,12 @@
 #include <chrono>
 #include <cstdlib>
 #include <iostream>
-#include <memory>
 #include <random>
 #include <tuple>
 
 #include <hip/hip_runtime.h>
 
 #include <boost/assert.hpp>
-#include <boost/bind.hpp>
-#include <boost/intrusive_ptr.hpp>
 
 #include <boost/fiber/all.hpp>
 #include <boost/fiber/hip/waitfor.hpp>

@@ -5,7 +5,7 @@ HIPCC := $(HIP_PATH)/bin/hipcc
 CPPFLAGS := -O2 -std=c++11
 LDFLAGS := -L/usr/local/lib
 INCLUDES := -I/usr/local/include -I$(HIP_PATH)/include
-LIBRARIES := -lboost_fiber -lboost_context -lboost_system -lboost_filesystem
+LIBRARIES := -lboost_fiber -lboost_context
 
 all: build
 
