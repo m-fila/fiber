@@ -1,4 +1,4 @@
-HIP_PATH := /opt/rocm/hip
+HIP_PATH := /opt/rocm
 
 HIPCC := $(HIP_PATH)/bin/hipcc
 
