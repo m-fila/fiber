@@ -15,7 +15,7 @@
 #include <boost/assert.hpp>
 
 #include <boost/fiber/all.hpp>
-#include <boost/fiber/hip/waitfor.hpp>
+#include "boost/fiber/hip/waitfor.hpp"
 
 __global__
 void vector_add(int * a, int * b, int * c, int size) {

@@ -11,13 +11,13 @@ all: build
 
 build: single_stream multiple_streams
 
-single_stream.o:single_stream.cpp
+single_stream.o:single_stream.hip
 	$(HIPCC) $(INCLUDES) $(CPPFLAGS) -o $@ -c $<
 
 single_stream: single_stream.o
 	$(HIPCC) $(LDFLAGS) -o $@ $+ $(LIBRARIES)
 
-multiple_streams.o:multiple_streams.cpp
+multiple_streams.o:multiple_streams.hip
 	$(HIPCC) $(INCLUDES) $(CPPFLAGS) -o $@ -c $<
 
 multiple_streams: multiple_streams.o
