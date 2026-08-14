@@ -34,7 +34,7 @@ namespace cuda {
 namespace detail {
 
 template< typename Rendezvous >
-static void trampoline( cudaStream_t st, cudaError_t status, void * vp) {
+static void CUDART_CB trampoline( cudaStream_t st, cudaError_t status, void * vp) {
     Rendezvous * data = static_cast< Rendezvous * >( vp);
     data->notify( st, status);
 }
