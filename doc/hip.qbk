@@ -57,7 +57,7 @@ streams has finished.
             for ( int i = 0; i < full_size; i += size) {
                 hipMemcpyAsync( dev_a, host_a + i, size * sizeof( int), hipMemcpyHostToDevice, stream);
                 hipMemcpyAsync( dev_b, host_b + i, size * sizeof( int), hipMemcpyHostToDevice, stream);
-                hipLaunchKernel(kernel, dim3(size / 256), dim3(256), 0, stream, size, dev_a, dev_b, dev_c);
+                hipLaunchKernelGGL(kernel, dim3(size / 256), dim3(256), 0, stream, size, dev_a, dev_b, dev_c);
                 hipMemcpyAsync( host_c + i, dev_c, size * sizeof( int), hipMemcpyDeviceToHost, stream);
             }
             auto result = boost::fibers::hip::waitfor_all( stream); // suspend fiber till HIP stream has finished
