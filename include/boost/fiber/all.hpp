@@ -31,6 +31,7 @@
 #include <boost/fiber/recursive_timed_mutex.hpp>
 #include <boost/fiber/scheduler.hpp>
 #include <boost/fiber/segmented_stack.hpp>
+#include <boost/fiber/semaphore.hpp>
 #include <boost/fiber/timed_mutex.hpp>
 #include <boost/fiber/type.hpp>
 #include <boost/fiber/unbuffered_channel.hpp>

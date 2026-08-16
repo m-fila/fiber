@@ -6,6 +6,7 @@
   http://www.boost.org/LICENSE_1_0.txt).
 ]
 
+[#mutex_types]
 [section:mutex_types Mutex Types]
 
 [class_heading mutex]

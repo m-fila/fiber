@@ -38,6 +38,7 @@ add_library(boost_fiber
   src/recursive_mutex.cpp
   src/recursive_timed_mutex.cpp
   src/scheduler.cpp
+  src/semaphore.cpp
   src/timed_mutex.cpp
   src/waker.cpp
 )

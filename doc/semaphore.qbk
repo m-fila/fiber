@@ -1,0 +1,134 @@
+[/
+  (C) Copyright 2026 Mateusz Jakub Fila
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
+
+[section:semaphores Semaphores]
+
+A semaphore is a synchronization primitive that limits concurrent access to a
+shared resource through a counter of available permits. It does not necessarily
+make access mutually exclusive: with `n` permits, up to `n` fibers may hold a
+permit at the same time. Only a semaphore holding a single permit behaves like a
+mutex (see [link mutex_types Mutex Types]), and even then, unlike a mutex, it
+has no owner: a permit can be released by a different fiber (or thread) than the
+one that acquired it.
+
+A fiber calls [member_link semaphore..acquire] to take one permit, suspending
+while none is available. [member_link semaphore..release] adds permits and
+resumes waiting fibers.
+
+[note Waiting fibers are woken by [member_link semaphore..release]; the order in
+which they acquire permits is not specified.]
+
+[class_heading semaphore]
+
+        #include <boost/fiber/semaphore.hpp>
+
+        namespace boost {
+        namespace fibers {
+
+        class semaphore {
+        public:
+            static constexpr std::size_t max() noexcept;
+
+            explicit semaphore( std::size_t initial = 0);
+
+            semaphore( semaphore const&) = delete;
+            semaphore & operator=( semaphore const&) = delete;
+            semaphore( semaphore &&) = delete;
+            semaphore & operator=( semaphore &&) = delete;
+            ~semaphore() = default;
+
+            void release( std::size_t n = 1);
+
+            void acquire();
+
+            bool try_acquire();
+
+            template< typename Clock, typename Duration >
+            bool try_acquire_until( std::chrono::time_point< Clock, Duration > const& timeout_time);
+
+            template< typename Rep, typename Period >
+            bool try_acquire_for( std::chrono::duration< Rep, Period > const& timeout_duration);
+        };
+
+        }}
+
+Instances of __semaphore__ are not copyable or movable.
+
+[member_heading semaphore..max]
+
+        static constexpr std::size_t max() noexcept;
+
+[variablelist
+[[Returns:] [The maximum number of permits the semaphore can hold.]]
+]
+
+[heading Constructor]
+
+        explicit semaphore( std::size_t initial = 0);
+
+[variablelist
+[[Effects:] [Constructs a semaphore holding `initial` permits.]]
+]
+
+[heading Destructor]
+
+        ~semaphore() = default;
+
+[variablelist
+[[Precondition:] [No fiber is blocked on `*this`.]]
+]
+
+[member_heading semaphore..release]
+
+        void release( std::size_t n = 1);
+
+[variablelist
+[[Effects:] [Adds `n` permits and unblocks waiting fibers. Does nothing if `n`
+is zero.]]
+[[Requires:] [`n` does not exceed `max()` minus the current number of permits.]]
+]
+
+[member_heading semaphore..acquire]
+
+        void acquire();
+
+[variablelist
+[[Effects:] [Blocks the calling fiber until a permit is available, then takes
+one permit.]]
+]
+
+[member_heading semaphore..try_acquire]
+
+        bool try_acquire();
+
+[variablelist
+[[Effects:] [Takes one permit if one is available, without blocking.]]
+[[Returns:] [`true` if a permit was taken, `false` otherwise.]]
+]
+
+[template_member_heading semaphore..try_acquire_until]
+
+        template< typename Clock, typename Duration >
+        bool try_acquire_until( std::chrono::time_point< Clock, Duration > const& timeout_time);
+
+[variablelist
+[[Effects:] [Blocks the calling fiber until a permit is available or the
+time point `timeout_time` is reached. If a permit becomes available, takes one.]]
+[[Returns:] [`true` if a permit was taken, `false` on timeout.]]
+]
+
+[template_member_heading semaphore..try_acquire_for]
+
+        template< typename Rep, typename Period >
+        bool try_acquire_for( std::chrono::duration< Rep, Period > const& timeout_duration);
+
+[variablelist
+[[Effects:] [Equivalent to `try_acquire_until( std::chrono::steady_clock::now() + timeout_duration)`.]]
+[[Returns:] [`true` if a permit was taken, `false` on timeout.]]
+]
+
+[endsect]
