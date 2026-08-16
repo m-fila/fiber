@@ -151,6 +151,7 @@
 [def __round_robin__ [class_link round_robin]]
 [def __segmented_stack__ [class_link segmented_stack]]
 [def __segmented_stack_stack__ ['segmented_stack-stack]]
+[def __semaphore__ [class_link semaphore]]
 [def __shared_future__ [template_link shared_future]]
 [def __shared_work__ [class_link shared_work]]
 [def __stack_allocator_concept__ [link stack_allocator_concept ['stack-allocator concept]]]
@@ -194,6 +195,10 @@
 [def __mutex_lock__ [member_link mutex..lock]]
 [def __mutex_try_lock__ [member_link mutex..try_lock]]
 [def __run_service__ `boost::fibers::asio::run_svc()`]
+[def __semaphore__arrive_and_wait [member_link semaphore..arrive_and_wait]]
+[def __semaphore__count_down[member_link semaphore..cound_down]]
+[def __semaphore__wait [member_link semaphore..wait]]
+[def __semaphore__try_wait [member_link semaphore..try_wait]]
 [def __shared_future_get__ [member_link shared_future..get]]
 [def __sleep_for__ [ns_function_link this_fiber..sleep_for]]
 [def __sleep_until__ [ns_function_link this_fiber..sleep_until]]
@@ -232,6 +237,7 @@ object are running in the same thread.
 [include mutexes.qbk]
 [include condition_variables.qbk]
 [include barrier.qbk]
+[include semaphore.qbk]
 [section:channels Channels]
 A channel is a model to communicate and synchronize `Threads of Execution`
 [footnote The smallest ordered sequence of instructions that can be managed

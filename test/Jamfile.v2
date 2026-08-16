@@ -246,6 +246,44 @@ test-suite asm :
                cxx11_variadic_templates ]
     : test_barrier_dispatch_asm ]
 
+[ run test_semaphore_post.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_post_asm ]
+
+[ run test_semaphore_dispatch.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_dispatch_asm ]
+
 [ run test_buffered_channel_post.cpp :
     : :
     <context-impl>fcontext
@@ -743,6 +781,44 @@ test-suite native :
                cxx11_variadic_templates ]
     : test_barrier_dispatch_native ]
 
+[ run test_semaphore_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_post_native ]
+
+[ run test_semaphore_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_dispatch_native ]
+
 [ run test_buffered_channel_post.cpp :
     : :
     <conditional>@native-impl
@@ -1126,6 +1202,44 @@ test-suite extra-asm :
                cxx11_variadic_templates ]
     : test_condition_mt_dispatch_asm ]
 
+[ run test_semaphore_mt_post.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_mt_post_asm ]
+
+[ run test_semaphore_mt_dispatch.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_mt_dispatch_asm ]
+
 [ run test_future_mt_post.cpp :
     : :
     <context-impl>fcontext
@@ -1242,6 +1356,44 @@ test-suite extra-native :
                cxx11_thread_local
                cxx11_variadic_templates ]
     : test_condition_mt_dispatch_native ]
+
+[ run test_semaphore_mt_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_mt_post_native ]
+
+[ run test_semaphore_mt_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_semaphore_mt_dispatch_native ]
 
 [ run test_future_mt_post.cpp :
     : :

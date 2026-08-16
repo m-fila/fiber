@@ -1,0 +1,117 @@
+[/
+  (C) Copyright 2026 Mateusz Jakub Fila
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
+
+[section:semaphores semaphores]
+
+A semaphore is a synchronization mechanism used to wait until a specified number
+of events have occurred. A semaphore is initialized with a counter, which is
+decremented by calls to [member_link semaphore..count_down] or
+[member_link semaphore..arrive_and_wait]. When the counter reaches zero, the semaphore
+is opened and all fibers waiting on the semaphore can proceed.
+
+A semaphore can be thought of as a single-use [class_link barrier]. Unlike a barrier, a
+semaphore is not reset after the counter reaches zero. Once opened, the semaphore
+remains open for its lifetime, and subsequent calls to [member_link
+semaphore..wait] return immediately.
+
+Barriers and semaphores are useful for different synchronization patterns.
+Barriers are useful when a group of fibers must repeatedly synchronize at a
+common point. semaphores are useful when a group of work items must be completed
+before proceeding, without requiring the work to be performed by particular
+execution agent or in a particular order.
+
+[class_heading semaphore]
+
+        #include <boost/fiber/semaphore.hpp>
+
+        namespace boost {
+        namespace fibers {
+
+        class semaphore {
+        public:
+            explicit semaphore( std::size_t initial);
+
+            semaphore( semaphore const&) = delete;
+            semaphore & operator=( semaphore const&) = delete;
+            semaphore( semaphore &&) = delete;
+            semaphore & operator=( semaphore &&) = delete;
+            ~semaphore() = default;
+
+            void count_down( std::size_t n = 1);
+            void wait();
+            void arrive_and_wait( std::size_t n = 1);
+        };
+
+        }}
+
+Instances of __semaphore__ are not copyable or movable.
+
+A semaphore maintains a counter that is initialized by the constructor.
+The counter can be decremented by calling `count_down` or
+`arrive_and_wait`. The semaphore is opened when the counter reaches zero.
+
+[heading Constructor]
+
+        explicit semaphore( std::size_t initial);
+
+[variablelist
+[[Effects:] [Constructs a semaphore with its counter initialized to `initial`.]]
+]
+
+[heading Destructor]
+
+        ~semaphore();
+
+[variablelist
+[[Effects:] [Destroys the semaphore.]]
+[[Precondition:] [No fiber is waiting on `*this`.  Either no `wait` or `arrive_and_wait`
+were called or the semaphore counter has reached zero.]]
+]
+
+[member_heading semaphore..count_down]
+
+        void count_down( std::size_t n = 1);
+
+[variablelist
+[[Effects:] [Atomically decrements the semaphore counter by `n`. If the counter
+reaches zero, all fibers blocked in `wait` or `arrive_and_wait` are
+unblocked.]]
+[[Requires:] [`n` is greater than zero and less than or equal to the current
+semaphore counter.]]
+]
+
+[member_heading semaphore..try_wait]
+
+        bool wait() const;
+
+[variablelist
+[[Returns:] [`true` if the semaphore counter has reached zero, `false` otherwise.
+The check is performed atomically.]]
+]
+
+[member_heading semaphore..wait]
+
+        void wait();
+
+[variablelist
+[[Effects:] [Blocks the calling fiber until the semaphore counter reaches zero.
+Returns immediately if the counter is already zero.]]
+]
+
+[member_heading semaphore..arrive_and_wait]
+
+        void arrive_and_wait( std::size_t n = 1);
+
+[variablelist
+[[Effects:] [Decrements the semaphore counter by `n`. If the counter reaches zero,
+all fibers blocked in `wait` or `arrive_and_wait` are unblocked.
+Otherwise, blocks the calling fiber until the semaphore counter reaches zero.]]
+[[Requires:] [`n` is greater than zero and less than or equal to the current
+semaphore counter.]]
+]
+
+[endsect]
