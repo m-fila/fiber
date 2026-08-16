@@ -63,6 +63,7 @@ lib boost_fiber
       algo/shared_work.cpp
       algo/work_stealing.cpp
       barrier.cpp
+      latch.cpp
       condition_variable.cpp
       context.cpp
       fiber.cpp
