@@ -139,6 +139,7 @@
 [def __future_error__ `future_error`]
 [def __future__ [template_link future]]
 [def __joinable__ [member_link fiber..joinable]]
+[def __latch__ [class_link latch]]
 [def __lock_error__ `lock_error`]
 [def __mutex__ [class_link mutex]]
 [def __numa_work_stealing__ [ns_class_link numa..work_stealing]]
@@ -191,6 +192,10 @@
 [def __get_id__ [member_link fiber..get_id]]
 [def __io_service__ [@http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference/io_service.html `boost::asio::io_service`]]
 [def __join__ [member_link fiber..join]]
+[def __latch__arrive_and_wait [member_link latch..arrive_and_wait]]
+[def __latch__count_down[member_link latch..cound_down]]
+[def __latch__wait [member_link latch..wait]]
+[def __latch__try_wait [member_link latch..try_wait]]
 [def __mutex_lock__ [member_link mutex..lock]]
 [def __mutex_try_lock__ [member_link mutex..try_lock]]
 [def __run_service__ `boost::fibers::asio::run_svc()`]
@@ -232,6 +237,7 @@ object are running in the same thread.
 [include mutexes.qbk]
 [include condition_variables.qbk]
 [include barrier.qbk]
+[include latch.qbk]
 [section:channels Channels]
 A channel is a model to communicate and synchronize `Threads of Execution`
 [footnote The smallest ordered sequence of instructions that can be managed

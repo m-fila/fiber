@@ -29,6 +29,7 @@ add_library(boost_fiber
   src/algo/shared_work.cpp
   src/algo/work_stealing.cpp
   src/barrier.cpp
+  src/latch.cpp
   src/condition_variable.cpp
   src/context.cpp
   src/fiber.cpp
