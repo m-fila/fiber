@@ -8,8 +8,8 @@
 [#hip]
 [section:hip ROCm/HIP]
 
-[@http://github.com/ROCm-Developer-Tools/HIP/tree/roc-1.6.0/ HIP] is part of the
-[@http://rocm.github.io/ ROC (Radeon Open Compute)] platform for parallel computing
+[@https://github.com/ROCm-Developer-Tools/HIP/tree/roc-1.6.0/ HIP] is part of the
+[@https://www.amd.com/en/products/software/rocm.html ROCm] platform for parallel computing
 on AMD and NVIDIA GPUs. The application programming interface of HIP gives access to
 GPU's instruction set and computation resources (Execution of compute kernels).
 
@@ -103,8 +103,8 @@ streams has finished.
     }}}
 
 [variablelist
-[[Effects:] [Suspends active fiber till HIP stream has finished its operations.]]
-[[Returns:] [tuple of stream reference and the HIP stream status]]
+[[Effects:] [Suspends active fiber till HIP stream or streams have finished their operations.]]
+[[Returns:] [For a single stream, returns a tuple containing the stream and its status. For multiple streams, returns a vector of tuples containing each stream and its status.]]
 ]
 
 
