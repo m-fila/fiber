@@ -160,7 +160,9 @@ context::~context() {
     // protect for concurrent access
     std::unique_lock< detail::spinlock > lk{ splk_ };
     BOOST_ASSERT( ! ready_is_linked() );
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
     BOOST_ASSERT( ! remote_ready_is_linked() );
+#endif
     BOOST_ASSERT( ! sleep_is_linked() );
     if ( is_context( type::dispatcher_context) ) {
         BOOST_ASSERT( nullptr == active() );
@@ -299,7 +301,14 @@ context::wait_until( std::chrono::steady_clock::time_point const& tp,
 bool context::wake(const size_t epoch) noexcept
 {
     size_t expected = epoch;
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
     bool is_last_waker = waker_epoch_.compare_exchange_strong(expected, epoch + 1, std::memory_order_acq_rel);
+#else
+    bool is_last_waker = ( expected == waker_epoch_);
+    if ( is_last_waker){
+        ++waker_epoch_;
+    }
+#endif
     if ( ! is_last_waker) {
         // waker_epoch_ has been incremented before, so consider this wake
         // operation as outdated and do nothing
@@ -307,11 +316,16 @@ bool context::wake(const size_t epoch) noexcept
     }
 
     BOOST_ASSERT( context::active() != this);
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
     if ( context::active()->get_scheduler() == get_scheduler()) {
         get_scheduler()->schedule( this);
     } else {
         get_scheduler()->schedule_from_remote( this);
     }
+#else
+    BOOST_ASSERT( context::active()->get_scheduler() == get_scheduler() );
+    get_scheduler()->schedule( this);
+#endif
     return true;
 }
 
@@ -387,10 +401,12 @@ context::ready_is_linked() const noexcept {
     return ready_hook_.is_linked();
 }
 
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
 bool
 context::remote_ready_is_linked() const noexcept {
     return remote_ready_hook_.is_linked();
 }
+#endif
 
 bool
 context::sleep_is_linked() const noexcept {

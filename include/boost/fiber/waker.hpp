@@ -2,6 +2,7 @@
 #define BOOST_FIBERS_WAKER_H
 
 #include <cstddef>
+#include <chrono>
 
 #include <boost/config.hpp>
 #include <boost/fiber/detail/config.hpp>

@@ -98,6 +98,7 @@ typedef intrusive::slist_member_hook<
     >
 >                                       terminated_hook;
 
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
 struct remote_ready_tag;
 typedef intrusive::slist_member_hook<
     intrusive::tag< remote_ready_tag >,
@@ -105,6 +106,7 @@ typedef intrusive::slist_member_hook<
         intrusive::safe_link
     >
 >                                       remote_ready_hook;
+#endif
 
 }
 
@@ -149,6 +151,8 @@ private:
 public:
 #if ! defined(BOOST_FIBERS_NO_ATOMICS)
     std::atomic<size_t>                                 waker_epoch_{ 0 };
+#else
+    std::size_t                                         waker_epoch_{ 0 };
 #endif
 private:
     scheduler                                       *   scheduler_{ nullptr };
@@ -318,7 +322,9 @@ public:
 
     bool ready_is_linked() const noexcept;
 
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
     bool remote_ready_is_linked() const noexcept;
+#endif
 
     bool sleep_is_linked() const noexcept;
 
@@ -338,12 +344,14 @@ public:
         lst.push_back( * this);
     }
 
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
     template< typename List >
     void remote_ready_link( List & lst) noexcept {
         static_assert( std::is_same< typename List::value_traits::hook_type, detail::remote_ready_hook >::value, "not a remote-ready-queue");
         BOOST_ASSERT( ! remote_ready_is_linked() );
         lst.push_back( * this);
     }
+#endif
 
     template< typename Set >
     void sleep_link( Set & set) noexcept {
@@ -373,13 +381,21 @@ public:
       
     friend void intrusive_ptr_add_ref( context * ctx) noexcept {
         BOOST_ASSERT( nullptr != ctx);
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
         ctx->use_count_.fetch_add( 1, std::memory_order_relaxed);
+#else
+        ++( ctx->use_count_);
+#endif
     }
 
     friend void intrusive_ptr_release( context * ctx) noexcept {
         BOOST_ASSERT( nullptr != ctx);
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
         if ( 1 == ctx->use_count_.fetch_sub( 1, std::memory_order_release) ) {
             std::atomic_thread_fence( std::memory_order_acquire);
+#else
+        if ( 1 == --(ctx->use_count_) ) {
+#endif
             boost::context::fiber c = std::move( ctx->c_);
             // destruct context
             ctx->~context();
@@ -406,13 +422,21 @@ public:
 
     inline void intrusive_ptr_add_ref( context * ctx) noexcept {
         BOOST_ASSERT( nullptr != ctx);
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
         ctx->use_count_.fetch_add( 1, std::memory_order_relaxed);
+#else
+        ++( ctx->use_count_);
+#endif
     }
 
     inline void intrusive_ptr_release( context * ctx) noexcept {
         BOOST_ASSERT( nullptr != ctx);
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
         if ( 1 == ctx->use_count_.fetch_sub( 1, std::memory_order_release) ) {
             std::atomic_thread_fence( std::memory_order_acquire);
+#else
+        if ( 1 == --(ctx->use_count_) ) {
+#endif
             boost::context::fiber c = std::move( ctx->c_);
             // destruct context
             ctx->~context();

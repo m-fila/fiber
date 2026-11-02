@@ -11,8 +11,9 @@
 
 #include <boost/fiber/detail/config.hpp>
 
+#include <mutex>
+
 #if !defined(BOOST_FIBERS_NO_ATOMICS) 
-# include <mutex>
 # include <boost/fiber/detail/spinlock_ttas_adaptive.hpp>
 # include <boost/fiber/detail/spinlock_ttas.hpp>
 # if defined(BOOST_FIBERS_HAS_FUTEX)
@@ -35,12 +36,7 @@ namespace detail {
 #if defined(BOOST_FIBERS_NO_ATOMICS)
 struct spinlock {
     constexpr spinlock() noexcept {}
-    void lock() noexcept {}
-    void unlock() noexcept {}
-};
-
-struct spinlock_lock {
-    constexpr spinlock_lock( spinlock &) noexcept {}
+    bool try_lock() noexcept { return true; }
     void lock() noexcept {}
     void unlock() noexcept {}
 };
@@ -72,8 +68,8 @@ using spinlock = spinlock_rtm< spinlock_ttas >;
 using spinlock = spinlock_ttas;
 #  endif
 # endif
-using spinlock_lock = std::unique_lock< spinlock >;
 #endif
+using spinlock_lock = std::unique_lock< spinlock >;
 
 }}}
 

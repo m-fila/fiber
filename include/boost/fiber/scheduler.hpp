@@ -72,6 +72,7 @@ private:
                 intrusive::linear< true >,
                 intrusive::cache_last< true >
             >                                               terminated_queue_type;
+#if ! defined(BOOST_FIBERS_NO_ATOMICS)
     typedef intrusive::slist<
                 context,
                 intrusive::member_hook<
@@ -79,6 +80,7 @@ private:
                 intrusive::linear< true >,
                 intrusive::cache_last< true >
             >                                               remote_ready_queue_type;
+#endif
 
 #if ! defined(BOOST_FIBERS_NO_ATOMICS)
     // remote ready-queue contains context' signaled by schedulers
