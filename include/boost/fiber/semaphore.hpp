@@ -13,13 +13,18 @@
 
 #include <boost/config.hpp>
 
-#include <boost/fiber/condition_variable.hpp>
 #include <boost/fiber/detail/config.hpp>
 #include <boost/fiber/detail/convert.hpp>
-#include <boost/fiber/mutex.hpp>
+#include <boost/fiber/detail/spinlock.hpp>
+#include <boost/fiber/waker.hpp>
 
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
+#endif
+
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable:4251)
 #endif
 
 namespace boost {
@@ -27,9 +32,9 @@ namespace fibers {
 
 class BOOST_FIBERS_DECL semaphore {
 private:
+    detail::spinlock    splk_{};
+    wait_queue          wait_queue_{};
     std::size_t         count_;
-    mutable mutex       mtx_{};
-    condition_variable  cond_{};
 
     bool try_acquire_until_( std::chrono::steady_clock::time_point const& timeout_time);
 
@@ -66,9 +71,9 @@ public:
 
 class BOOST_FIBERS_DECL binary_semaphore {
 private:
+    detail::spinlock    splk_{};
+    wait_queue          wait_queue_{};
     bool                available_;
-    mutable mutex       mtx_{};
-    condition_variable  cond_{};
 
     bool try_acquire_until_( std::chrono::steady_clock::time_point const& timeout_time);
 
@@ -104,6 +109,10 @@ public:
 };
 
 }}
+
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_SUFFIX
