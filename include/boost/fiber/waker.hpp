@@ -77,7 +77,7 @@ public:
     bool suspend_and_wait_until( detail::spinlock_lock &,
                                  context *,
                                  std::chrono::steady_clock::time_point const&);
-    void notify_one();
+    bool notify_one();
     void notify_all();
 
     bool empty() const;

@@ -46,15 +46,16 @@ wait_queue::suspend_and_wait_until( detail::spinlock_lock & lk,
     return true;
 }
 
-void
+bool
 wait_queue::notify_one() {
     while ( ! slist_.empty() ) {
         waker & w = slist_.front();
         slist_.pop_front();
         if ( w.wake()) {
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 void

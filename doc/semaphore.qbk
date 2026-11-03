@@ -21,10 +21,11 @@ signalling between fibers or for a mutex-like guard without ownership.
 
 A fiber calls [member_link semaphore..acquire] to take one permit, suspending
 while none is available. [member_link semaphore..release] adds permits and
-resumes waiting fibers.
+unblocks waiting fibers.
 
-[note Waiting fibers are woken by [member_link semaphore..release]; the order in
-which they acquire permits is not specified.]
+[note [member_link semaphore..release] assigns permits to waiting fibers in the
+order they began waiting and marks those fibers ready.
+Permits are added to the counter only when no fiber is waiting.]
 
 [class_heading semaphore]
 
@@ -91,7 +92,8 @@ Instances of __semaphore__ are not copyable or movable.
         void release( std::size_t n = 1);
 
 [variablelist
-[[Effects:] [Adds `n` permits and unblocks waiting fibers. Does nothing if `n`
+[[Effects:] [Assigns permits to up to `n` waiting fibers, oldest first, and
+marks them ready. Adds any remaining permits to the counter. Does nothing if `n`
 is zero.]]
 [[Requires:] [`n` does not exceed `max()` minus the current number of permits.]]
 ]
@@ -195,7 +197,8 @@ not. It provides the same operations as __semaphore__, except that
         void release();
 
 [variablelist
-[[Effects:] [Makes the permit available and resumes one waiting fiber.]]
+[[Effects:] [Assigns the permit to the oldest waiting fiber and marks it ready,
+or makes the permit available if no fiber is waiting.]]
 [[Requires:] [The permit is not already available.]]
 ]
 
