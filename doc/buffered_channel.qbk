@@ -64,14 +64,17 @@ Class `buffered_channel` supports range-for syntax:
         namespace boost {
         namespace fibers {
 
-        template< typename T >
+        template< typename T,
+                  typename Allocator = std::allocator< typename std::remove_reference<T>::type > >
         class buffered_channel {
         public:
-            typedef T   value_type;
+            typedef T         value_type;
+            typedef Allocator allocator_type;
 
             class iterator;
 
-            explicit buffered_channel( std::size_t capacity);
+            explicit buffered_channel( std::size_t capacity,
+                                       allocator_type const& allocator = allocator_type{});
 
             buffered_channel( buffered_channel const& other) = delete; 
             buffered_channel & operator=( buffered_channel const& other) = delete; 
@@ -110,23 +113,30 @@ Class `buffered_channel` supports range-for syntax:
             channel_op_status try_pop( value_type & va);
         };
 
-        template< typename T >
-        buffered_channel< T >::iterator begin( buffered_channel< T > & chan);
+        template< typename T, typename Allocator >
+        typename buffered_channel< T, Allocator >::iterator
+        begin( buffered_channel< T, Allocator > & chan);
 
-        template< typename T >
-        buffered_channel< T >::iterator end( buffered_channel< T > & chan);
+        template< typename T, typename Allocator >
+        typename buffered_channel< T, Allocator >::iterator
+        end( buffered_channel< T, Allocator > & chan);
 
         }}
 
+The optional `Allocator` template parameter must meet the C++11 Allocator requirements.
+The constructor accepts an allocator instance, which is used to
+allocate and deallocate the buffer and to construct and destroy its elements.
+
 [heading Constructor]
 
-        explicit buffered_channel( std::size_t capacity);
+        explicit buffered_channel( std::size_t capacity,
+                       allocator_type const& allocator = allocator_type{});
 
 [variablelist
 [[Preconditions:] [`2<=capacity && 0==(capacity & (capacity-1))`]]
 [[Effects:] [The constructor constructs an object of class `buffered_channel`
-with an internal buffer of size `capacity`.]]
-[[Throws:] [`fiber_error`]]
+with an internal buffer of size `capacity`, using `allocator` for its storage.]]
+[[Throws:] [`fiber_error` or exceptions thrown by the allocator.]]
 [[Error Conditions:] [
 [*invalid_argument]: if `0==capacity || 0!=(capacity & (capacity-1))`.]]
 [[Notes:] [A `push()`, `push_wait_for()` or `push_wait_until()` will not block
@@ -162,6 +172,8 @@ the fiber is blocked.]
 
 [variablelist
 [[Effects:] [[buffered_channel_push_effects Otherwise enqueues]]]
+[[Requirements:] [The `const&` overload requires `value_type` to be copy
+constructible. The `&&` overload requires `value_type` to be move constructible.]]
 [[Throws:] [Exceptions thrown by copy- or move-operations.]]
 ]
 
@@ -178,6 +190,8 @@ it doesn't block and returns `full`.]
 
 [variablelist
 [[Effects:] [[buffered_channel_try_push_effects Otherwise enqueues]]]
+[[Requirements:] [The `const&` overload requires `value_type` to be copy
+constructible. The `&&` overload requires `value_type` to be move constructible.]]
 [[Throws:] [Exceptions thrown by copy- or move-operations.]]
 ]
 
@@ -191,6 +205,7 @@ it doesn't block and returns `full`.]
 fiber gets suspended until at least one new item is `push()`ed (return value
 `success` and `va` contains dequeued value) or the channel gets `close()`d
 (return value `closed`)[unblocking]]]
+[[Requirements:] [`value_type` must be move assignable.]]
 [[Throws:] [Exceptions thrown by copy- or move-operations.]]
 ]
 ]
@@ -205,6 +220,7 @@ fiber gets suspended until at least one new item is `push()`ed (return value
 [[Effects:] [Dequeues a value from the channel. If the channel is empty, the
 fiber gets suspended until at least one new item is `push()`ed or the channel
 gets `close()`d (which throws an exception)[unblocking]]]
+[[Requirements:] [`value_type` must be move constructible.]]
 [[Throws:] [`fiber_error` if `*this` is closed or by copy- or move-operations.]]
 [[Error conditions:] [`std::errc::operation_not_permitted`]]
 ]
@@ -220,6 +236,7 @@ gets `close()`d (which throws an exception)[unblocking]]]
 [[Effects:] [If channel is empty, returns `empty`. If channel is closed,
 returns `closed`. Otherwise it returns `success` and `va` contains the
 dequeued value[unblocking]]]
+[[Requirements:] [`value_type` must be move assignable.]]
 [[Throws:] [Exceptions thrown by copy- or move-operations.]]
 ]
 ]
@@ -244,6 +261,7 @@ value `success` and `va` contains dequeued value), or the channel gets
 [[Effects:] [Accepts `std::chrono::duration` and internally computes a timeout
 time as (system time + `timeout_duration`).
 [buffered_channel_pop_wait_until_effects the computed timeout time..[unblocking]]]]
+[[Requirements:] [`value_type` must be move assignable.]]
 [[Throws:] [timeout-related exceptions or by copy- or move-operations.]]
 ]
 ]
@@ -260,22 +278,25 @@ time as (system time + `timeout_duration`).
 [variablelist
 [[Effects:] [Accepts a `std::chrono::time_point< Clock, Duration >`.
 [buffered_channel_pop_wait_until_effects the passed `time_point`..[unblocking]]]]
+[[Requirements:] [`value_type` must be move assignable.]]
 [[Throws:] [timeout-related exceptions or by copy- or move-operations.]]
 ]
 ]
 [buffered_channel_pop_wait_until buffered_channel .]
 
-[heading Non-member function `begin( buffered_channel< T > &)`]
-    template< typename T >
-    buffered_channel< T >::iterator begin( buffered_channel< T > &);
+[heading Non-member function `begin( buffered_channel< T, Allocator > &)`]
+    template< typename T, typename Allocator >
+    typename buffered_channel< T, Allocator >::iterator
+    begin( buffered_channel< T, Allocator > &);
 
 [variablelist
 [[Returns:] [Returns a range-iterator (input-iterator).]]
 ]
 
-[heading Non-member function `end( buffered_channel< T > &)`]
-    template< typename T >
-    buffered_channel< R >::iterator end( buffered_channel< T > &);
+[heading Non-member function `end( buffered_channel< T, Allocator > &)`]
+    template< typename T, typename Allocator >
+    typename buffered_channel< T, Allocator >::iterator
+    end( buffered_channel< T, Allocator > &);
 
 [variablelist
 [[Returns:] [Returns an end range-iterator (input-iterator).]]
