@@ -30,7 +30,7 @@ semaphore::release( std::size_t n) {
     std::unique_lock< mutex > lk{ mtx_ };
     BOOST_ASSERT( n <= max() - count_);
     count_ += n;
-    lk.unlock(); // no pessimization
+    lk.unlock();
     if ( 1 == n) {
         cond_.notify_one();
     } else {
@@ -59,6 +59,42 @@ bool semaphore::try_acquire_until_( std::chrono::steady_clock::time_point const&
         return false;
     }
     --count_;
+    return true;
+}
+
+binary_semaphore::binary_semaphore( bool initial) :
+    available_{ initial } {
+}
+
+void binary_semaphore::release() {
+    std::unique_lock< mutex > lk{ mtx_ };
+    BOOST_ASSERT( ! available_);
+    available_ = true;
+    lk.unlock();
+    cond_.notify_one();
+}
+
+void binary_semaphore::acquire() {
+    std::unique_lock< mutex > lk{ mtx_ };
+    cond_.wait( lk, [this]{ return available_; });
+    available_ = false;
+}
+
+bool binary_semaphore::try_acquire() {
+    std::unique_lock< mutex > lk{ mtx_ };
+    if ( ! available_) {
+        return false;
+    }
+    available_ = false;
+    return true;
+}
+
+bool binary_semaphore::try_acquire_until_( std::chrono::steady_clock::time_point const& timeout_time) {
+    std::unique_lock< mutex > lk{ mtx_ };
+    if ( ! cond_.wait_until( lk, timeout_time, [this]{ return available_; }) ) {
+        return false;
+    }
+    available_ = false;
     return true;
 }
 

@@ -64,6 +64,45 @@ public:
     }
 };
 
+class BOOST_FIBERS_DECL binary_semaphore {
+private:
+    bool                available_;
+    mutable mutex       mtx_{};
+    condition_variable  cond_{};
+
+    bool try_acquire_until_( std::chrono::steady_clock::time_point const& timeout_time);
+
+public:
+    static constexpr std::size_t max() noexcept {
+        return 1;
+    }
+
+    explicit binary_semaphore( bool initial = false);
+
+    binary_semaphore( binary_semaphore const&) = delete;
+    binary_semaphore & operator=( binary_semaphore const&) = delete;
+    binary_semaphore( binary_semaphore &&) = delete;
+    binary_semaphore & operator=( binary_semaphore &&) = delete;
+    ~binary_semaphore() = default;
+
+    void release();
+
+    void acquire();
+
+    bool try_acquire();
+
+    template< typename Clock, typename Duration >
+    bool try_acquire_until( std::chrono::time_point< Clock, Duration > const& timeout_time_) {
+        std::chrono::steady_clock::time_point timeout_time = detail::convert( timeout_time_);
+        return try_acquire_until_( timeout_time);
+    }
+
+    template< typename Rep, typename Period >
+    bool try_acquire_for( std::chrono::duration< Rep, Period > const& timeout_duration) {
+        return try_acquire_until_( std::chrono::steady_clock::now() + timeout_duration);
+    }
+};
+
 }}
 
 #ifdef BOOST_HAS_ABI_HEADERS

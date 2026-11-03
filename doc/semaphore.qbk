@@ -15,6 +15,10 @@ mutex (see [link mutex_types Mutex Types]), and even then, unlike a mutex, it
 has no owner: a permit can be released by a different fiber (or thread) than the
 one that acquired it.
 
+Two types are provided: __semaphore__, which holds any number of permits, and
+__binary_semaphore__, which holds at most one and is the natural choice for
+signalling between fibers or for a mutex-like guard without ownership.
+
 A fiber calls [member_link semaphore..acquire] to take one permit, suspending
 while none is available. [member_link semaphore..release] adds permits and
 resumes waiting fibers.
@@ -130,5 +134,72 @@ time point `timeout_time` is reached. If a permit becomes available, takes one.]
 [[Effects:] [Equivalent to `try_acquire_until( std::chrono::steady_clock::now() + timeout_duration)`.]]
 [[Returns:] [`true` if a permit was taken, `false` on timeout.]]
 ]
+
+[class_heading binary_semaphore]
+
+A __binary_semaphore__ holds at most one permit, so it is either available or
+not. It provides the same operations as __semaphore__, except that
+[member_link binary_semaphore..release] takes no count and `max()` returns `1`.
+
+        #include <boost/fiber/semaphore.hpp>
+
+        namespace boost {
+        namespace fibers {
+
+        class binary_semaphore {
+        public:
+            static constexpr std::size_t max() noexcept;
+
+            explicit binary_semaphore( bool initial = false);
+
+            binary_semaphore( binary_semaphore const&) = delete;
+            binary_semaphore & operator=( binary_semaphore const&) = delete;
+            binary_semaphore( binary_semaphore &&) = delete;
+            binary_semaphore & operator=( binary_semaphore &&) = delete;
+            ~binary_semaphore() = default;
+
+            void release();
+
+            void acquire();
+
+            bool try_acquire();
+
+            template< typename Clock, typename Duration >
+            bool try_acquire_until( std::chrono::time_point< Clock, Duration > const& timeout_time);
+
+            template< typename Rep, typename Period >
+            bool try_acquire_for( std::chrono::duration< Rep, Period > const& timeout_duration);
+        };
+
+        }}
+
+[member_heading binary_semaphore..max]
+
+        static constexpr std::size_t max() noexcept;
+
+[variablelist
+[[Returns:] [`1`.]]
+]
+
+[heading Constructor]
+
+        explicit binary_semaphore( bool initial = false);
+
+[variablelist
+[[Effects:] [Constructs a binary semaphore holding one permit if `initial` is
+`true`, none otherwise.]]
+]
+
+[member_heading binary_semaphore..release]
+
+        void release();
+
+[variablelist
+[[Effects:] [Makes the permit available and resumes one waiting fiber.]]
+[[Requires:] [The permit is not already available.]]
+]
+
+The remaining member functions behave as the corresponding members of
+__semaphore__ with at most one permit.
 
 [endsect]

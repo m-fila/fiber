@@ -59,6 +59,37 @@ void test_semaphore_timed() {
     BOOST_CHECK( s.try_acquire_for( std::chrono::milliseconds( 20) ) );
 }
 
+void test_binary_semaphore() {
+    value = 0;
+
+    boost::fibers::binary_semaphore s( false);
+    BOOST_CHECK( ! s.try_acquire() );
+
+    boost::fibers::fiber f(
+        boost::fibers::launch::dispatch,
+        [&] {
+            s.acquire();
+            ++value;
+        });
+
+    boost::this_fiber::yield();
+    BOOST_CHECK_EQUAL( 0, value);
+
+    s.release();
+    f.join();
+
+    BOOST_CHECK_EQUAL( 1, value);
+    BOOST_CHECK( ! s.try_acquire() );
+}
+
+void test_binary_semaphore_timed() {
+    boost::fibers::binary_semaphore s( true);
+    BOOST_CHECK( s.try_acquire_for( std::chrono::milliseconds( 20) ) );
+    BOOST_CHECK( ! s.try_acquire_for( std::chrono::milliseconds( 20) ) );
+    s.release();
+    BOOST_CHECK( s.try_acquire_until( std::chrono::steady_clock::now() + std::chrono::milliseconds( 20) ) );
+}
+
 boost::unit_test::test_suite * init_unit_test_suite( int, char* []) {
     boost::unit_test::test_suite * test =
         BOOST_TEST_SUITE("Boost.Fiber: semaphore test suite");
@@ -66,6 +97,9 @@ boost::unit_test::test_suite * init_unit_test_suite( int, char* []) {
     test->add( BOOST_TEST_CASE( & test_semaphore) );
     test->add( BOOST_TEST_CASE( & test_semaphore_initial) );
     test->add( BOOST_TEST_CASE( & test_semaphore_timed) );
+
+    test->add( BOOST_TEST_CASE( & test_binary_semaphore) );
+    test->add( BOOST_TEST_CASE( & test_binary_semaphore_timed) );
 
     return test;
 }
