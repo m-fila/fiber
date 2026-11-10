@@ -33,6 +33,7 @@
 #include <boost/fiber/segmented_stack.hpp>
 #include <boost/fiber/timed_mutex.hpp>
 #include <boost/fiber/type.hpp>
+#include <boost/fiber/unbound_channel.hpp>
 #include <boost/fiber/unbuffered_channel.hpp>
 
 #endif // BOOST_FIBERS_H
