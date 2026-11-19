@@ -103,7 +103,6 @@ target_link_libraries(boost_fiber_numa
   PRIVATE
     Boost::algorithm
     Boost::filesystem
-    Boost::format
 )
 
 target_compile_definitions(boost_fiber_numa

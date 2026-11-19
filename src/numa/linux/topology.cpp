@@ -18,7 +18,6 @@
 #include <boost/config.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/format.hpp>
 
 #include "boost/fiber/exceptions.hpp"
 
@@ -156,8 +155,8 @@ std::vector< node > topology() {
     // iterate list of logical cpus
     for ( std::uint32_t cpu_id : cpus) {
         fs::path cpu_path{
-            boost::str(
-                boost::format("/sys/devices/system/cpu/cpu%d/") % cpu_id) };
+            fs::path{ "/sys/devices/system/cpu" } /
+            ( "cpu" + std::to_string( cpu_id) ) };
         BOOST_ASSERT( fs::exists( cpu_path) );
         // 2. to witch NUMA node the CPU belongs to
         directory_iterator e;
@@ -181,8 +180,8 @@ std::vector< node > topology() {
     for ( auto entry : map) {
         // NUMA-node distance
         fs::path distance_path{
-            boost::str(
-                boost::format("/sys/devices/system/node/node%d/distance") % entry.second.id) };
+            fs::path{ "/sys/devices/system/node" } /
+            ( "node" + std::to_string( entry.second.id) ) / "distance" };
         if ( fs::exists( distance_path) ) {
             fs::ifstream fs_distance{ distance_path };
             std::string content;

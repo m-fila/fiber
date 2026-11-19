@@ -17,7 +17,6 @@ import boost-context-features ;
 constant boost_dependencies_private :
     /boost/algorithm//boost_algorithm
     /boost/filesystem//boost_filesystem
-    /boost/format//boost_format
     ;
 
 project
